@@ -1,3 +1,5 @@
+import bcrypt from "bcrypt";
+
 import Veterinario from "../models/Veterinario.js";
 
 const registrar = async (req, res) => {
@@ -14,7 +16,16 @@ const registrar = async (req, res) => {
   try {
     //guardar Nuevo veterinario
     const veterinario = new Veterinario(req.body);
+    if (!veterinario.isModified("password")) {
+      return;
+    }
+
+    // Hash Password
+    const saltRounds = await bcrypt.genSalt(10);
+    const passHash = await bcrypt.hash(veterinario.password, saltRounds);
+    veterinario.password = passHash;
     const veterinarioGuardado = await veterinario.save();
+
     res.json(veterinarioGuardado);
   } catch (e) {
     console.log(e);
@@ -41,8 +52,10 @@ const confirmar = async (req, res) => {
   } catch (e) {
     console.log(e);
   }
-
-  console.log(usuarioConfirmar);
 };
 
-export { registrar, perfil, confirmar };
+const autenticar = (req, res) => {
+  res.json({ msg: "Autenticando" });
+};
+
+export { registrar, perfil, confirmar, autenticar };
