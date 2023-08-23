@@ -8,7 +8,7 @@ const conectarBBDD = async () => {
     });
 
     const url = `${db.connection.host}:${db.connection.port}`;
-    console.log("MongoDB: " + url);
+    //console.log("MongoDB: " + url);
   } catch (e) {
     console.log(`ERROR ${e.message}`);
     process.exit(1);
