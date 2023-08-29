@@ -3,8 +3,9 @@ import Veterinario from "../models/Veterinario.js";
 
 const checkAuth = async (req, res, next) => {
   let token;
+
   if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
-    console.log("token correcto");
+    console.log("Token Correcto");
   }
 
   try {
@@ -13,10 +14,11 @@ const checkAuth = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     req.veterinario = await Veterinario.findById(decoded.id).select("-password -token -confirmado");
+    console.log("Token Autentificado");
     return next();
   } catch (e) {
     console.log(e);
-    const error = new Error("Token No Valido 1");
+    const error = new Error("Token No Valido");
     res.status(403).json({ msg: error.message });
   }
 
