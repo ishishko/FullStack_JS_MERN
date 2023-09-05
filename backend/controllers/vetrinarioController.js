@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import Veterinario from "../models/Veterinario.js";
 import generarJWT from "../helpers/generarJWT.js";
 import generarId from "../helpers/generarId.js";
+import emailRegistro from "../helpers/emailRegistro.js";
 
 const registrar = async (req, res, next) => {
   const { nombre, email, password } = req.body;
@@ -16,14 +17,25 @@ const registrar = async (req, res, next) => {
   }
 
   try {
-    //guardar Nuevo veterinario
+    //Crear Nuevo veterinario
     const veterinario = new Veterinario(req.body);
 
     // Hash Password
     const saltRounds = await bcrypt.genSalt(10);
     const passHash = await bcrypt.hash(veterinario.password, saltRounds);
     veterinario.password = passHash;
+
+    //Guardar Veterinario
     const veterinarioGuardado = await veterinario.save();
+    //Enviar email
+    emailRegistro({
+      email,
+      nombre,
+      token: veterinarioGuardado.token,
+    });
+
+    console.log("Veterinario Creado, Email Enviado");
+    console.log(veterinarioGuardado);
 
     res.json(veterinarioGuardado);
   } catch (e) {
@@ -40,6 +52,7 @@ const perfil = (req, res) => {
 const confirmar = async (req, res) => {
   const { token } = req.params;
   const usuarioConfirmar = await Veterinario.findOne({ token });
+  console.log(usuarioConfirmar);
   if (!usuarioConfirmar) {
     const error = new Error("Token Invalido");
     return res.status(404).json({ msg: error.message });
@@ -49,7 +62,7 @@ const confirmar = async (req, res) => {
     usuarioConfirmar.token = null;
     usuarioConfirmar.confirmado = true;
     await usuarioConfirmar.save();
-    res.json({ msh: "Usuario Confirmado Correctamente" });
+    res.json({ msg: "Usuario Confirmado Correctamente" });
   } catch (e) {
     console.log(e);
   }
