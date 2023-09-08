@@ -1,6 +1,43 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
+import Alerta from "../components/Alerta";
+import clienteAxios from "../config/axios";
 
 const Login = () => {
+  const { auth } = useAuth();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [alerta, setAlerta] = useState({});
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    console.log("aha");
+    if ([email, password].includes("")) {
+      return setAlerta({ msg: "Todos los campos son Obligatorios", error: true });
+    }
+    if (password.length <= 7) {
+      return setAlerta({ msg: "Password minimo 8 caracteres", error: true });
+    }
+
+    setAlerta({});
+
+    console.log("paso");
+    try {
+      const { data } = await clienteAxios.post("/veterinarios/login", { email, password });
+      localStorage.setItem("token", data.token);
+    } catch (e) {
+      setAlerta({
+        msg: e.response.data.msg,
+        error: true,
+      });
+    }
+  };
+
+  const { msg } = alerta;
+
   return (
     <>
       <div>
@@ -9,12 +46,19 @@ const Login = () => {
         </h1>
       </div>
       <div className="mt-20 md:mt-5 shadow-lg px-5 py-10 rounded-xl bg-white">
-        <form action="">
+        {msg && <Alerta alerta={alerta} />}
+        <form action="" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="" className="uppercase text-gray-600 block text-xl font-bold mt-6">
               Email
             </label>
-            <input type="email" placeholder="Ingresar Email" className="border w-full p-3 mt-2 bg-gray-50 rounded-xl" />
+            <input
+              type="email"
+              placeholder="Ingresar Email"
+              className="border w-full p-3 mt-2 bg-gray-50 rounded-xl"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
           <div>
             <label htmlFor="" className="uppercase text-gray-600 block text-xl font-bold mt-6">
@@ -24,6 +68,8 @@ const Login = () => {
               type="password"
               placeholder="Ingresar Password"
               className="border w-full p-3 mt-2 bg-gray-50 rounded-xl"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <input
