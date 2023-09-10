@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import Alerta from "../components/Alerta";
 import clienteAxios from "../config/axios";
@@ -11,10 +11,11 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [alerta, setAlerta] = useState({});
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("aha");
     if ([email, password].includes("")) {
       return setAlerta({ msg: "Todos los campos son Obligatorios", error: true });
     }
@@ -24,10 +25,10 @@ const Login = () => {
 
     setAlerta({});
 
-    console.log("paso");
     try {
       const { data } = await clienteAxios.post("/veterinarios/login", { email, password });
       localStorage.setItem("token", data.token);
+      navigate("/admin");
     } catch (e) {
       setAlerta({
         msg: e.response.data.msg,
