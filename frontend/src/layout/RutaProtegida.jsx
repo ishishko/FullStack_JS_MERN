@@ -1,10 +1,12 @@
 import { Outlet, Navigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+
 function RutaProtegida() {
   const { auth, cargando } = useAuth();
   console.log(auth);
-  console.log(cargando);
 
   if (cargando) {
     return "Cargando";
@@ -12,9 +14,10 @@ function RutaProtegida() {
 
   return (
     <>
-      <h1>Esta es una ruta protegida</h1>
+      <Header />
+      <main className="container mx-auto mt-10">{auth?._id ? <Outlet /> : <Navigate to="/" />}</main>
 
-      {auth ? <Outlet /> : <Navigate to="/" />}
+      <Footer />
     </>
   );
 }
