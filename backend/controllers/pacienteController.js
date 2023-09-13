@@ -78,12 +78,12 @@ const eliminarPaciente = async (req, res) => {
     return res.json({ msg: "Accion no valida" });
   }
 
-  /*try {
+  try {
     await paciente.deleteOne();
     res.json({ msg: "Paciente Eliminado" });
   } catch (e) {
     console.log(e);
-  }*/
+  }
 };
 
 export { agregarPaciente, obtenerPacientes, obtenerPaciente, actualizarPaciente, eliminarPaciente };

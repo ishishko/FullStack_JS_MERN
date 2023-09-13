@@ -1,6 +1,6 @@
 import PacientesContext from "../context/PacienteProvider";
 import usePacientes from "../hooks/usePacientes";
-import Paciente from "./Pacientes";
+import Pacientes from "./pacientes";
 
 function ListadoPacientes() {
   const { pacientes } = usePacientes();
@@ -15,7 +15,7 @@ function ListadoPacientes() {
             Administra tus <span className=" text-indigo-600 font-bold">Pacientes y Citas</span>
           </p>
           {pacientes.map((paciente) => (
-            <Paciente key={paciente._id} paciente={paciente} />
+            <Pacientes key={paciente._id} paciente={paciente} />
           ))}
         </>
       ) : (

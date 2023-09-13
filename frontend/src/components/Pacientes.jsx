@@ -1,6 +1,10 @@
+import usePacientes from "../hooks/usePacientes";
+
 /* eslint-disable react/prop-types */
 const Pacientes = ({ paciente }) => {
   const { email, fechaAlta, nombre, propietario, sintomas, _id } = paciente;
+
+  const { setEdicion, eliminarPaciente } = usePacientes();
 
   const formatearFecha = (fecha) => {
     const nuevaFecha = new Date(fecha);
@@ -33,12 +37,14 @@ const Pacientes = ({ paciente }) => {
         <button
           type="button"
           className=" py-2 px-10 bg-indigo-600 hover:bg-indigo-700 text-white uppercase font-bold rounded-lg"
+          onClick={() => setEdicion(paciente)}
         >
           Editar
         </button>
         <button
           type="button"
           className=" py-2 px-10 bg-red-600 hover:bg-red-700 text-white uppercase font-bold rounded-lg"
+          onClick={() => eliminarPaciente(_id)}
         >
           Eliminar
         </button>
