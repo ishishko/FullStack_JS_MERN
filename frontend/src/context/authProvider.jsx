@@ -23,7 +23,6 @@ const AuthProvider = ({ children }) => {
           Authorization: `Bearer ${token}`,
         },
       };
-      console.log(config.headers.Authorization);
 
       try {
         const { data } = await clienteAxios("/veterinarios/perfil", config);
