@@ -164,4 +164,74 @@ const nuevoPassword = async (req, res) => {
   }
 };
 
-export { registrar, perfil, confirmar, autenticar, olvidePassword, comprobarToken, nuevoPassword };
+const actualizarPerfil = async (req, res) => {
+  const { id } = req.params;
+  const { email } = req.body;
+  const veterinario = await Veterinario.findById(id);
+
+  if (!veterinario) {
+    const error = new Error("Hubo un error");
+    return res.status(400).json({ msg: error.message });
+  }
+
+  if (veterinario.email !== email) {
+    const existeEmail = await Veterinario.findOne({ email });
+    if (existeEmail) {
+      const error = new Error("Email ya Registrado");
+      return res.status(400).json({ msg: error.message });
+    }
+  }
+
+  try {
+    veterinario.nombre = req.body.nombre;
+    veterinario.email = req.body.email;
+    veterinario.web = req.body.web;
+    veterinario.telefono = req.body.telefono;
+
+    const veterinarioActualizado = await veterinario.save();
+    res.json(veterinarioActualizado);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const actualizarPassword = async (req, res) => {
+  //Leemos los datos del password
+  const { id } = req.veterinario;
+  const { pwd_actual, pwd_nuevo } = req.body;
+
+  //Comprobamos la existencia de usuario
+  const veterinario = await Veterinario.findById(id);
+
+  if (!veterinario) {
+    const error = new Error("Hubo un error");
+    return res.status(400).json({ msg: error.message });
+  }
+
+  //comprobar password
+  const passwordConfirmada = await bcrypt.compare(pwd_actual, veterinario.password);
+  console.log(passwordConfirmada);
+  if (passwordConfirmada) {
+    const saltRounds = await bcrypt.genSalt(10);
+    const passHash = await bcrypt.hash(pwd_nuevo, saltRounds);
+    veterinario.password = passHash;
+    await veterinario.save();
+    res.json({ msg: "Password almacenado Correctamente" });
+    console.log(veterinario);
+  } else {
+    const error = new Error("Password Incorrecta");
+    return res.status(400).json({ msg: error.message });
+  }
+};
+
+export {
+  registrar,
+  perfil,
+  confirmar,
+  autenticar,
+  olvidePassword,
+  comprobarToken,
+  nuevoPassword,
+  actualizarPerfil,
+  actualizarPassword,
+};
